@@ -1,0 +1,598 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Cross-asset trend and carry program · Hugo Hoenn</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;1,9..144,400&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet"><style>
+:root{--navy:#0B3D91;--ink:#151A21;--muted:#5B6770;--rule:#DCE1E8;--tint:#F3F6FA}
+*{box-sizing:border-box}body{margin:0;color:var(--ink);font-family:"IBM Plex Sans",-apple-system,Segoe UI,Helvetica,Arial,sans-serif;line-height:1.6;font-feature-settings:"tnum"}
+.top{background:var(--navy);color:#fff;padding:1.2rem 0}.top .wrap{display:flex;justify-content:space-between;align-items:center;font-size:.9rem}
+.top a{color:#C9D5EA;text-decoration:none;margin-left:1.4rem}.top a:hover{color:#fff}.top b{font-weight:600}
+.wrap{max-width:46rem;margin:0 auto;padding:0 1.5rem}
+article{padding:2.4rem 0 4rem}
+h1{font-family:"Fraunces",Georgia,serif;font-weight:400;font-size:clamp(1.9rem,4vw,2.6rem);line-height:1.15;letter-spacing:-.012em;margin:0 0 .8rem;color:var(--navy)}
+h2{font-family:"Fraunces",Georgia,serif;font-weight:400;font-size:1.5rem;margin:2.4rem 0 .8rem;color:var(--ink)}
+h3{font-size:1.05rem;margin:1.8rem 0 .5rem}
+p,li{font-size:1.02rem}
+h1+p em{color:var(--muted)}
+.meta{display:flex;gap:1rem;flex-wrap:wrap;align-items:center;margin:1rem 0 1.2rem;padding-bottom:1.2rem;border-bottom:1px solid var(--rule);font-size:.9rem;color:var(--muted)}
+.btn{display:inline-block;text-decoration:none;color:var(--navy);border:1px solid var(--navy);border-radius:3px;padding:.4rem .8rem;font-weight:500;font-size:.85rem}.btn:hover{background:var(--navy);color:#fff}
+img{max-width:100%;height:auto;display:block;margin:1.2rem 0;border:1px solid var(--rule);border-radius:4px}
+table{border-collapse:collapse;width:100%;font-size:.9rem;margin:1rem 0;display:block;overflow-x:auto}
+th{background:var(--navy);color:#fff;text-align:left;padding:.45rem .6rem;font-weight:600;white-space:nowrap}
+td{padding:.42rem .6rem;border-bottom:1px solid var(--rule);white-space:nowrap}tr:nth-child(even) td{background:var(--tint)}
+code{background:var(--tint);padding:.1rem .35rem;border-radius:3px;font-size:.88em}pre{background:var(--tint);padding:.9rem 1rem;border-radius:4px;overflow-x:auto;font-size:.85rem}pre code{background:none;padding:0}
+blockquote{margin:1rem 0;padding:.4rem 1rem;border-left:3px solid var(--navy);color:var(--muted)}
+a{color:var(--navy)}
+.series{background:var(--tint);border-radius:4px;padding:.9rem 1.1rem;font-size:.9rem;margin:0 0 1.6rem}.series a{text-decoration:none;font-weight:500}
+footer{border-top:1px solid var(--rule);padding:1.4rem 0 2.5rem;font-size:.85rem;color:var(--muted)}
+</style></head><body>
+<div class="top"><div class="wrap"><b><a href="/" style="margin:0;color:#fff">Hugo Hoenn</a></b><span><a href="/#work">Work</a><a href="/xray/">X-ray</a><a href="mailto:hhoenn@syr.edu">Contact</a></span></div></div>
+<article class="wrap"><h1
+id="cross-asset-trend--carry-program--and-a-test-of-ml-against-simple-rules">Cross-Asset
+Trend &amp; Carry Program — and a test of ML against simple rules</h1>
+<p><em>Part 3 of the GS QIS product review: a systematic macro program
+across 21 equity, bond, currency and commodity markets, benchmarked
+against Goldman Sachs' Managed Futures Strategy Fund (GMSSX), with a
+gradient-boosted overlay tested under purged walk-forward validation.
+Hugo Hoenn, September 2026.</em></p><div class="meta"><a class="btn" href="https://github.com/hugohoenn/macro-program">Code and data on GitHub →</a><span>Public data only · every table reproducible from the repo</span></div><div class="series">Goldman Sachs QIS product review, from public data: <a href="/review/gartx/">Part 1 · Absolute Return Tracker</a> · <a href="/review/gslc/">Part 2 · ActiveBeta U.S. Large Cap</a> · <a href="/macro/">Part 3 · Cross-asset trend program vs. Managed Futures Strategy</a></div>
+<p>The QIS posting describes a team that "manages exposures to global
+stock, bond, currency, and commodity markets to generate excess
+return... leveraging the latest technology, including Artificial
+Intelligence techniques." This project does both halves, and reports
+what each did.</p>
+<h2 id="1-the-program">1. The program</h2>
+<p><strong>Markets.</strong> 21 liquid markets via total-return ETFs
+(excess return over T-bills ≈ a collateralised futures position, with
+roll yield embedded): 6 equity indices, 4 government bond buckets, 6
+commodities, 5 currencies. History from 2007–08, so the sample includes
+the financial crisis.</p>
+<p><strong>Signals.</strong> Time-series momentum at 1, 3 and 12 months
+(return scaled by volatility, clipped, averaged), and carry where it can
+be measured from free data: FX carry from 3-month interbank rate
+differentials (FRED, lagged a month), bond carry from the US term
+spread. Equities and commodities are trend only. Signal = trend for
+equities and commodities; 0.75 trend + 0.25 carry for FX and bonds.</p>
+<p><strong>Sizing.</strong> Each market scaled to a volatility target,
+equal risk to each of the four asset classes, portfolio scaled to 10%
+ex-ante volatility on a 60-day covariance, gross leverage capped at 3×.
+Monthly rebalance. Costs 10 bps per unit of turnover, which is ETF-like
+and conservative: at futures-like costs of 3 bps the annualised return
+would be 6.6% instead of 5.1%.</p>
+<p><img src="figures/growth.png" alt="Growth" /></p>
+<h2 id="2-results-feb-2008--sep-2026">2. Results, Feb 2008 – Sep
+2026</h2>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th>Ann. return</th>
+<th>Vol</th>
+<th>Sharpe</th>
+<th>Max DD</th>
+<th>Skew</th>
+<th>Corr S&amp;P</th>
+<th>Corr 60/40</th>
+<th>Corr factor strat.</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Trend + carry (program)</td>
+<td>5.1%</td>
+<td>10.2%</td>
+<td>0.41</td>
+<td>-20.7%</td>
+<td>0.52</td>
+<td>-0.15</td>
+<td>-0.15</td>
+<td>-0.10</td>
+</tr>
+<tr class="even">
+<td>Trend only</td>
+<td>5.1%</td>
+<td>10.3%</td>
+<td>0.41</td>
+<td>-16.1%</td>
+<td>0.54</td>
+<td>-0.18</td>
+<td>-0.19</td>
+<td>-0.14</td>
+</tr>
+<tr class="odd">
+<td>Carry only</td>
+<td>1.9%</td>
+<td>7.9%</td>
+<td>0.11</td>
+<td>-34.4%</td>
+<td>-0.19</td>
+<td>0.09</td>
+<td>0.15</td>
+<td>0.12</td>
+</tr>
+<tr class="even">
+<td>S&amp;P 500</td>
+<td>11.6%</td>
+<td>15.6%</td>
+<td>0.71</td>
+<td>-46.3%</td>
+<td>-0.57</td>
+<td>1.00</td>
+<td>0.98</td>
+<td>0.98</td>
+</tr>
+<tr class="odd">
+<td>60/40</td>
+<td>8.2%</td>
+<td>10.0%</td>
+<td>0.71</td>
+<td>-29.7%</td>
+<td>-0.60</td>
+<td>0.98</td>
+<td>1.00</td>
+<td>0.97</td>
+</tr>
+</tbody>
+</table>
+<p>The program earned 5.1% a year at a 0.41 Sharpe with a <strong>-20.7%
+worst drawdown</strong>, <strong>positive skew</strong>, and a
+correlation of <strong>-0.15 to the S&amp;P 500</strong>, -0.15 to 60/40
+and -0.10 to the multi-factor equity strategy from Part 0. That
+combination — modest Sharpe, positive skew, negative correlation to
+everything a client already owns — is the entire case for trend
+following, and it showed up on schedule:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Period</th>
+<th>Program</th>
+<th>Trend only</th>
+<th>GMSSX</th>
+<th>S&amp;P 500</th>
+<th>60/40</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>GFC (Feb 2008–Feb 2009)</td>
+<td>+15.2%</td>
+<td>+16.2%</td>
+<td>n/a</td>
+<td>-44.9%</td>
+<td>-28.8%</td>
+</tr>
+<tr class="even">
+<td>Aug–Sep 2011</td>
+<td>+1.6%</td>
+<td>+0.8%</td>
+<td>n/a</td>
+<td>-12.1%</td>
+<td>-6.4%</td>
+</tr>
+<tr class="odd">
+<td>Q4 2018</td>
+<td>-5.2%</td>
+<td>-4.6%</td>
+<td>+1.3%</td>
+<td>-13.5%</td>
+<td>-7.4%</td>
+</tr>
+<tr class="even">
+<td>COVID (Feb–Mar 2020)</td>
+<td>+15.0%</td>
+<td>+14.8%</td>
+<td>+4.9%</td>
+<td>-19.4%</td>
+<td>-11.5%</td>
+</tr>
+<tr class="odd">
+<td>2022 (full year)</td>
+<td>+13.7%</td>
+<td>+24.6%</td>
+<td>+20.6%</td>
+<td>-18.2%</td>
+<td>-15.8%</td>
+</tr>
+<tr class="even">
+<td>Trend winter (2012–2019)</td>
+<td>+23.0%</td>
+<td>+22.2%</td>
+<td>+11.8%</td>
+<td>+200.9%</td>
+<td>+114.8%</td>
+</tr>
+</tbody>
+</table>
+<p>The carry sleeve, as built here from free data, added nothing: on its
+own it earned a 0.11 Sharpe with a -34.4% drawdown, and its
+long-duration tilt cost the program 11 points of return in 2022 relative
+to trend alone. It is kept in the headline version because it was
+pre-specified, and reported so a reader can see it. A carry signal worth
+having needs futures-curve data for commodities and equities, which is
+the first upgrade.</p>
+<p><img src="figures/attribution.png" alt="Attribution" /></p>
+<table>
+<thead>
+<tr class="header">
+<th>Year</th>
+<th>Program</th>
+<th>Trend only</th>
+<th>GMSSX</th>
+<th>S&amp;P 500</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>2008</td>
+<td>+18.1%</td>
+<td>+18.4%</td>
+<td>+0.0%</td>
+<td>-32.7%</td>
+</tr>
+<tr class="even">
+<td>2009</td>
+<td>-4.6%</td>
+<td>-6.8%</td>
+<td>+0.0%</td>
+<td>+26.4%</td>
+</tr>
+<tr class="odd">
+<td>2010</td>
+<td>+6.8%</td>
+<td>+5.4%</td>
+<td>+0.0%</td>
+<td>+15.1%</td>
+</tr>
+<tr class="even">
+<td>2011</td>
+<td>+9.7%</td>
+<td>+6.7%</td>
+<td>+0.0%</td>
+<td>+1.9%</td>
+</tr>
+<tr class="odd">
+<td>2012</td>
+<td>+0.1%</td>
+<td>-1.0%</td>
+<td>+5.8%</td>
+<td>+16.0%</td>
+</tr>
+<tr class="even">
+<td>2013</td>
+<td>+3.8%</td>
+<td>+4.2%</td>
+<td>-4.4%</td>
+<td>+32.3%</td>
+</tr>
+<tr class="odd">
+<td>2014</td>
+<td>+3.9%</td>
+<td>+1.9%</td>
+<td>-2.6%</td>
+<td>+13.5%</td>
+</tr>
+<tr class="even">
+<td>2015</td>
+<td>+8.5%</td>
+<td>+10.4%</td>
+<td>+10.4%</td>
+<td>+1.2%</td>
+</tr>
+<tr class="odd">
+<td>2016</td>
+<td>+1.3%</td>
+<td>-0.6%</td>
+<td>-0.6%</td>
+<td>+12.0%</td>
+</tr>
+<tr class="even">
+<td>2017</td>
+<td>+15.4%</td>
+<td>+12.3%</td>
+<td>+2.7%</td>
+<td>+21.7%</td>
+</tr>
+<tr class="odd">
+<td>2018</td>
+<td>-3.4%</td>
+<td>+0.7%</td>
+<td>-1.7%</td>
+<td>-4.6%</td>
+</tr>
+<tr class="even">
+<td>2019</td>
+<td>-7.0%</td>
+<td>-6.3%</td>
+<td>+2.4%</td>
+<td>+31.2%</td>
+</tr>
+<tr class="odd">
+<td>2020</td>
+<td>+11.7%</td>
+<td>+10.6%</td>
+<td>+7.0%</td>
+<td>+18.3%</td>
+</tr>
+<tr class="even">
+<td>2021</td>
+<td>-0.2%</td>
+<td>+1.0%</td>
+<td>+5.0%</td>
+<td>+28.7%</td>
+</tr>
+<tr class="odd">
+<td>2022</td>
+<td>+13.7%</td>
+<td>+24.6%</td>
+<td>+20.6%</td>
+<td>-18.2%</td>
+</tr>
+<tr class="even">
+<td>2023</td>
+<td>+0.9%</td>
+<td>-2.1%</td>
+<td>-3.7%</td>
+<td>+26.2%</td>
+</tr>
+<tr class="odd">
+<td>2024</td>
+<td>+6.4%</td>
+<td>+6.2%</td>
+<td>-5.1%</td>
+<td>+24.9%</td>
+</tr>
+<tr class="even">
+<td>2025</td>
+<td>+16.5%</td>
+<td>+14.3%</td>
+<td>+0.6%</td>
+<td>+17.7%</td>
+</tr>
+<tr class="odd">
+<td>2026</td>
+<td>-2.0%</td>
+<td>-0.1%</td>
+<td>+16.3%</td>
+<td>+12.7%</td>
+</tr>
+</tbody>
+</table>
+<h2 id="3-against-goldmans-managed-futures-fund">3. Against Goldman's
+managed-futures fund</h2>
+<p>GMSSX (QIS, since Feb 2012) is the natural comparison. Common window
+from Mar 2012:</p>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th>Ann. return</th>
+<th>Vol</th>
+<th>Sharpe</th>
+<th>Max DD</th>
+<th>Skew</th>
+<th>Corr S&amp;P</th>
+<th>Corr 60/40</th>
+<th>Corr factor strat.</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Program (trend + carry)</td>
+<td>4.5%</td>
+<td>10.1%</td>
+<td>0.34</td>
+<td>-20.7%</td>
+<td>0.59</td>
+<td>-0.16</td>
+<td>-0.16</td>
+<td>-0.11</td>
+</tr>
+<tr class="even">
+<td>Program (trend only)</td>
+<td>5.0%</td>
+<td>10.2%</td>
+<td>0.38</td>
+<td>-16.1%</td>
+<td>0.60</td>
+<td>-0.19</td>
+<td>-0.21</td>
+<td>-0.14</td>
+</tr>
+<tr class="odd">
+<td>GS Managed Futures Strategy (GMSSX)</td>
+<td>3.4%</td>
+<td>9.3%</td>
+<td>0.24</td>
+<td>-19.4%</td>
+<td>-0.22</td>
+<td>-0.09</td>
+<td>-0.11</td>
+<td>-0.06</td>
+</tr>
+<tr class="even">
+<td>DBMF (since May 2019)</td>
+<td>9.6%</td>
+<td>11.2%</td>
+<td>0.64</td>
+<td>-17.3%</td>
+<td>0.00</td>
+<td>-0.15</td>
+<td>-0.22</td>
+<td>-0.12</td>
+</tr>
+<tr class="odd">
+<td>KMLM (since Dec 2020)</td>
+<td>6.5%</td>
+<td>13.0%</td>
+<td>0.31</td>
+<td>-25.9%</td>
+<td>0.10</td>
+<td>-0.36</td>
+<td>-0.45</td>
+<td>-0.37</td>
+</tr>
+<tr class="even">
+<td>60/40</td>
+<td>9.4%</td>
+<td>9.1%</td>
+<td>0.87</td>
+<td>-20.0%</td>
+<td>-0.39</td>
+<td>0.98</td>
+<td>1.00</td>
+<td>0.96</td>
+</tr>
+</tbody>
+</table>
+<p>The program's correlation to GMSSX is <strong>0.63</strong> at 8.4%
+tracking error: the same family of bets, implemented differently. Over
+the fund's life the program earned a higher Sharpe (0.34 vs 0.24) with
+positive rather than negative skew; GMSSX did better in Q4 2018 and,
+notably, in 2022 (+20.6% vs +13.7% for the program, +24.6% for trend
+alone). The newer trend ETFs (DBMF, KMLM) have short records that begin
+after the 2012–19 "trend winter", so their Sharpe ratios are not
+comparable. This is a backtest against a live fund with real costs and
+constraints, so the gap should be read as "in the same league", not
+"better".</p>
+<p><img src="figures/vs_funds.png" alt="Versus funds" /></p>
+<h2 id="4-does-machine-learning-help-tested-honestly-no">4. Does machine
+learning help? Tested honestly, no.</h2>
+<p>A gradient-boosted model (sklearn
+<code>HistGradientBoostingRegressor</code>, depth 3, 200 trees) predicts
+each market's next-month volatility-scaled excess return from twelve
+features: trend at four horizons, carry, volatility, the volatility
+ratio, 12-month drawdown and asset class. It is trained on a pooled
+panel of ~5,000 market-months and re-fitted every January on all data
+ending two months earlier — an expanding window with a one-month
+embargo, so no training target overlaps a prediction. Predictions are
+converted to positions and run through the identical sizing engine.</p>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th>Ann. return</th>
+<th>Vol</th>
+<th>Sharpe</th>
+<th>Max DD</th>
+<th>Skew</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Trend rule (same window)</td>
+<td>5.2%</td>
+<td>10.1%</td>
+<td>0.42</td>
+<td>-16.1%</td>
+<td>0.59</td>
+</tr>
+<tr class="even">
+<td>ML overlay (gradient boosting)</td>
+<td>-1.3%</td>
+<td>7.3%</td>
+<td>-0.33</td>
+<td>-39.6%</td>
+<td>0.17</td>
+</tr>
+<tr class="odd">
+<td>50/50 blend</td>
+<td>1.8%</td>
+<td>8.8%</td>
+<td>0.09</td>
+<td>-17.2%</td>
+<td>0.96</td>
+</tr>
+</tbody>
+</table>
+<p>Out of sample from Mar 2010, the model's monthly rank correlation
+with realised returns was 0.03 (t = 1.5) against 0.06 (t = 2.4) for the
+plain trend rule. As a strategy it lost money. Permutation importance
+shows it leaning on the same trend features the rule uses, plus
+volatility:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Feature</th>
+<th>2016</th>
+<th>2020</th>
+<th>2024</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>z1</td>
+<td>0.023</td>
+<td>0.040</td>
+<td>0.037</td>
+</tr>
+<tr class="even">
+<td>z3</td>
+<td>0.061</td>
+<td>0.024</td>
+<td>0.029</td>
+</tr>
+<tr class="odd">
+<td>z6</td>
+<td>0.068</td>
+<td>0.048</td>
+<td>0.029</td>
+</tr>
+<tr class="even">
+<td>z12</td>
+<td>0.047</td>
+<td>0.040</td>
+<td>0.028</td>
+</tr>
+<tr class="odd">
+<td>carry</td>
+<td>0.017</td>
+<td>0.017</td>
+<td>0.011</td>
+</tr>
+<tr class="even">
+<td>vol</td>
+<td>0.054</td>
+<td>0.030</td>
+<td>0.032</td>
+</tr>
+<tr class="odd">
+<td>vol_ratio</td>
+<td>0.039</td>
+<td>0.031</td>
+<td>0.041</td>
+</tr>
+<tr class="even">
+<td>dd12</td>
+<td>0.036</td>
+<td>0.028</td>
+<td>0.022</td>
+</tr>
+</tbody>
+</table>
+<p>The reading is not that ML cannot work in this setting; it is that
+with ~5,000 noisy observations and a signal-to-noise ratio this low, a
+flexible learner overfits and a rule with a 100-year literature behind
+it does not. The blend did not rescue it. This is the result a QIS team
+would expect and the one an applicant is least tempted to publish, which
+is why it is here.</p>
+<p><img src="figures/ml_vs_rules.png" alt="ML vs rules" /></p>
+<h2 id="what-this-cannot-tell-you">What this cannot tell you</h2>
+<ul>
+<li>ETF proxies have shorter histories and higher costs than futures,
+and no true commodity or equity carry. A futures implementation with
+curve data is the honest next step.</li>
+<li>18 years is one full trend cycle: a crisis, a seven-year winter, a
+second crisis, an inflation shock. Sharpe 0.4 is consistent with the
+long-run evidence for trend and cannot be distinguished from 0.2 or 0.6
+on this sample.</li>
+<li>The comparison to GMSSX is backtest-versus-live and favours the
+backtest.</li>
+<li>One ML specification was tested. A heavily regularised linear model
+or monotonic constraints encoding trend priors might close the gap; they
+were not tried, to keep the test pre-specified.</li>
+</ul>
+<h2 id="code">Code</h2>
+<p><code>src/data.py</code> (prices, FRED rates),
+<code>src/strategy.py</code> (signals, sizing, simulation, sleeves),
+<code>src/ml.py</code> (panel features, purged walk-forward,
+importance), <code>src/analysis.py</code> (metrics, benchmarks, crisis
+table, attribution, charts). Tables in <code>output/*.csv</code>.</p>
+<p><em>Independent research for discussion. Not affiliated with or
+endorsed by Goldman Sachs. Not investment advice.</em></p>
+</article><footer class="wrap">Independent research for discussion purposes. Not affiliated with or endorsed by Goldman Sachs. Not investment advice. © Hugo Hoenn 2026.</footer></body></html>

@@ -1,0 +1,450 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>ActiveBeta U.S. Large Cap, rebuilt from the rulebook · Hugo Hoenn</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;1,9..144,400&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet"><style>
+:root{--navy:#0B3D91;--ink:#151A21;--muted:#5B6770;--rule:#DCE1E8;--tint:#F3F6FA}
+*{box-sizing:border-box}body{margin:0;color:var(--ink);font-family:"IBM Plex Sans",-apple-system,Segoe UI,Helvetica,Arial,sans-serif;line-height:1.6;font-feature-settings:"tnum"}
+.top{background:var(--navy);color:#fff;padding:1.2rem 0}.top .wrap{display:flex;justify-content:space-between;align-items:center;font-size:.9rem}
+.top a{color:#C9D5EA;text-decoration:none;margin-left:1.4rem}.top a:hover{color:#fff}.top b{font-weight:600}
+.wrap{max-width:46rem;margin:0 auto;padding:0 1.5rem}
+article{padding:2.4rem 0 4rem}
+h1{font-family:"Fraunces",Georgia,serif;font-weight:400;font-size:clamp(1.9rem,4vw,2.6rem);line-height:1.15;letter-spacing:-.012em;margin:0 0 .8rem;color:var(--navy)}
+h2{font-family:"Fraunces",Georgia,serif;font-weight:400;font-size:1.5rem;margin:2.4rem 0 .8rem;color:var(--ink)}
+h3{font-size:1.05rem;margin:1.8rem 0 .5rem}
+p,li{font-size:1.02rem}
+h1+p em{color:var(--muted)}
+.meta{display:flex;gap:1rem;flex-wrap:wrap;align-items:center;margin:1rem 0 1.2rem;padding-bottom:1.2rem;border-bottom:1px solid var(--rule);font-size:.9rem;color:var(--muted)}
+.btn{display:inline-block;text-decoration:none;color:var(--navy);border:1px solid var(--navy);border-radius:3px;padding:.4rem .8rem;font-weight:500;font-size:.85rem}.btn:hover{background:var(--navy);color:#fff}
+img{max-width:100%;height:auto;display:block;margin:1.2rem 0;border:1px solid var(--rule);border-radius:4px}
+table{border-collapse:collapse;width:100%;font-size:.9rem;margin:1rem 0;display:block;overflow-x:auto}
+th{background:var(--navy);color:#fff;text-align:left;padding:.45rem .6rem;font-weight:600;white-space:nowrap}
+td{padding:.42rem .6rem;border-bottom:1px solid var(--rule);white-space:nowrap}tr:nth-child(even) td{background:var(--tint)}
+code{background:var(--tint);padding:.1rem .35rem;border-radius:3px;font-size:.88em}pre{background:var(--tint);padding:.9rem 1rem;border-radius:4px;overflow-x:auto;font-size:.85rem}pre code{background:none;padding:0}
+blockquote{margin:1rem 0;padding:.4rem 1rem;border-left:3px solid var(--navy);color:var(--muted)}
+a{color:var(--navy)}
+.series{background:var(--tint);border-radius:4px;padding:.9rem 1.1rem;font-size:.9rem;margin:0 0 1.6rem}.series a{text-decoration:none;font-weight:500}
+footer{border-top:1px solid var(--rule);padding:1.4rem 0 2.5rem;font-size:.85rem;color:var(--muted)}
+</style></head><body>
+<div class="top"><div class="wrap"><b><a href="/" style="margin:0;color:#fff">Hugo Hoenn</a></b><span><a href="/#work">Work</a><a href="/xray/">X-ray</a><a href="mailto:hhoenn@syr.edu">Contact</a></span></div></div>
+<article class="wrap"><h1 id="gs-qis-product-review--part-2-activebeta-us-large-cap-gslc">GS
+QIS Product Review — Part 2: ActiveBeta U.S. Large Cap (GSLC)</h1>
+<p><em>Rebuilding Goldman Sachs' flagship smart-beta ETF from its
+published rulebook, and asking what a client should make of its record.
+Hugo Hoenn, September 2026.</em></p><div class="meta"><a class="btn" href="https://github.com/hugohoenn/gs-qis-review">Code and data on GitHub →</a><span>Public data only · every table reproducible from the repo</span></div><div class="series">Goldman Sachs QIS product review, from public data: <a href="/review/gartx/">Part 1 · Absolute Return Tracker</a> · <a href="/review/gslc/">Part 2 · ActiveBeta U.S. Large Cap</a> · <a href="/macro/">Part 3 · Cross-asset trend program vs. Managed Futures Strategy</a></div>
+<p>GSLC tracks the Goldman Sachs ActiveBeta® U.S. Large Cap Equity
+Index, run by the QIS team since September 2015 (~$10bn+, 0.09% fee).
+The methodology is public (Solactive/GSAM, April 2024): four factor
+subindexes (value, momentum, quality, low volatility) built with a
+patented rank-based over/underweighting scheme, sector and beta bands,
+equal-weighted and rebalanced quarterly with a turnover-minimisation
+step. Two questions: <strong>how much of the ETF's behaviour can an
+outsider reproduce from the rulebook alone</strong>, and <strong>what
+has the product delivered relative to the S&amp;P 500 and its
+peers?</strong></p>
+<h2 id="1-the-rulebook-implemented">1. The rulebook, implemented</h2>
+<p>Everything the document publishes is implemented as written: the
+exact factor definitions (composite of book/price, sales/price and cash
+flow/price with earnings/price for financials; beta- and
+volatility-adjusted 11-month momentum; gross profit over assets with an
+ROE fallback; inverse 12-month volatility), ranks mapped to fractional
+scores on [−1, +1], the underweight-to-zero and proportional-overweight
+mechanics, a cap relative to universe weight, sector neutrality, equal
+weighting of the four subindexes, and quarterly rebalancing. Two
+parameters the document withholds — the Cut-off Score and the Maximum
+Stock Underweight — were fitted on 2015–20 (best: cut-off +0.00, max
+underweight 1.00%, cap 5× universe weight) and held fixed for 2021–26.
+Not implemented, and disclosed: the turnover-minimisation technique,
+beta bands, the 2 bp minimum weight, and the exact Solactive universe
+(the current S&amp;P 500 is used as a proxy; free cash flow is proxied
+by operating cash flow).</p>
+<p><img src="../figures/gslc_relative.png" alt="Relative wealth" /></p>
+<h2 id="2-how-close-does-the-rulebook-get-you">2. How close does the
+rulebook get you?</h2>
+<p>Close on the surface, far on what matters. The replica's
+<em>total</em> returns correlate 0.99 with GSLC, but so does anything
+that owns 400 large-cap US stocks. The meaningful test is the
+<strong>active</strong> return — GSLC minus the S&amp;P 500 versus the
+replica minus its own universe:</p>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th>Calibration 2015–20</th>
+<th>Test 2021–26</th>
+<th>Full</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>GSLC active vs SPY (ann.)</td>
+<td>-0.4%</td>
+<td>-1.4%</td>
+<td>-0.9%</td>
+</tr>
+<tr class="even">
+<td>Replica active vs own universe (ann.)</td>
+<td>-0.0%</td>
+<td>-0.1%</td>
+<td>-0.1%</td>
+</tr>
+<tr class="odd">
+<td>GSLC TE vs SPY</td>
+<td>1.3%</td>
+<td>1.4%</td>
+<td>1.4%</td>
+</tr>
+<tr class="even">
+<td>Replica TE vs universe</td>
+<td>0.9%</td>
+<td>1.5%</td>
+<td>1.3%</td>
+</tr>
+<tr class="odd">
+<td>Corr of active returns</td>
+<td>0.39</td>
+<td>0.42</td>
+<td>0.40</td>
+</tr>
+<tr class="even">
+<td>Sign agreement (months)</td>
+<td>66.1%</td>
+<td>59.4%</td>
+<td>62.6%</td>
+</tr>
+</tbody>
+</table>
+<p>The published rules recover a correlation of about
+<strong>0.40</strong> between the two active-return series, stable in
+and out of sample (so the two fitted parameters are not doing the work),
+with the sign right in about 63% of months. Put differently, the
+rulebook explains roughly one sixth of the variance of GSLC's active
+returns. The other five sixths live in what is not published: the
+turnover-minimisation step (which, at a 1.3% tracking error, can easily
+dominate quarter-to-quarter behaviour), the beta constraint, the exact
+universe, and data-vendor differences in the fundamental inputs. That is
+the honest answer to "can you replicate it": the <em>design</em> is
+transparent; the <em>implementation</em> is not, and at this tracking
+error the implementation is most of the product.</p>
+<p><img src="../figures/gslc_scatter.png" alt="Scatter" /></p>
+<h2 id="3-what-the-product-has-delivered">3. What the product has
+delivered</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Year</th>
+<th>GSLC</th>
+<th>SPY</th>
+<th>GSLC active</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>2015</td>
+<td>-0.9%</td>
+<td>-1.4%</td>
+<td>+0.4%</td>
+</tr>
+<tr class="even">
+<td>2016</td>
+<td>8.3%</td>
+<td>12.0%</td>
+<td>-3.7%</td>
+</tr>
+<tr class="odd">
+<td>2017</td>
+<td>22.5%</td>
+<td>21.7%</td>
+<td>+0.8%</td>
+</tr>
+<tr class="even">
+<td>2018</td>
+<td>-4.1%</td>
+<td>-4.6%</td>
+<td>+0.5%</td>
+</tr>
+<tr class="odd">
+<td>2019</td>
+<td>30.7%</td>
+<td>31.2%</td>
+<td>-0.5%</td>
+</tr>
+<tr class="even">
+<td>2020</td>
+<td>18.6%</td>
+<td>18.3%</td>
+<td>+0.2%</td>
+</tr>
+<tr class="odd">
+<td>2021</td>
+<td>27.2%</td>
+<td>28.7%</td>
+<td>-1.6%</td>
+</tr>
+<tr class="even">
+<td>2022</td>
+<td>-18.7%</td>
+<td>-18.2%</td>
+<td>-0.5%</td>
+</tr>
+<tr class="odd">
+<td>2023</td>
+<td>25.1%</td>
+<td>26.2%</td>
+<td>-1.1%</td>
+</tr>
+<tr class="even">
+<td>2024</td>
+<td>24.2%</td>
+<td>24.9%</td>
+<td>-0.7%</td>
+</tr>
+<tr class="odd">
+<td>2025</td>
+<td>16.2%</td>
+<td>17.7%</td>
+<td>-1.6%</td>
+</tr>
+<tr class="even">
+<td>2026</td>
+<td>10.7%</td>
+<td>13.3%</td>
+<td>-2.6%</td>
+</tr>
+</tbody>
+</table>
+<p>Since launch GSLC has trailed the S&amp;P 500 by
+<strong>-0.9%/yr</strong> with a <strong>1.4%</strong> tracking error —
+an information ratio near −0.6 — and the shortfall has widened since
+2021 (-1.4%/yr). The fee explains a tenth of it. A regression of the
+active returns on Fama-French 5 + momentum shows where the rest comes
+from:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Factor</th>
+<th>Loading</th>
+<th>t</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Alpha (ann.)</td>
+<td>-0.007</td>
+<td>-2.0</td>
+</tr>
+<tr class="even">
+<td>Mkt-RF</td>
+<td>-0.015</td>
+<td>-2.1</td>
+</tr>
+<tr class="odd">
+<td>SMB</td>
+<td>+0.050</td>
+<td>3.8</td>
+</tr>
+<tr class="even">
+<td>HML</td>
+<td>-0.043</td>
+<td>-2.8</td>
+</tr>
+<tr class="odd">
+<td>RMW</td>
+<td>+0.051</td>
+<td>3.6</td>
+</tr>
+<tr class="even">
+<td>CMA</td>
+<td>+0.019</td>
+<td>1.0</td>
+</tr>
+<tr class="odd">
+<td>MOM</td>
+<td>+0.027</td>
+<td>2.3</td>
+</tr>
+</tbody>
+</table>
+<p>R² 0.23. The product carries the exposures it advertises — quality
+(profitability, t = 3.6) and momentum (t = 2.3) — plus a small-cap tilt
+(SMB t = 3.8) that comes from underweighting the mega-caps, and,
+notably, a <strong>negative</strong> loading on the value factor as
+Fama-French define it (HML t = -2.8) despite a value subindex. The
+residual alpha is -0.7%/yr (t = -2.0). Regressing instead on the four
+single-factor sleeves from my own factor pipeline (Part 0) points the
+same way — GSLC's active returns are explained by quality and low
+volatility, not by value:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Sleeve (my pipeline, active vs. universe)</th>
+<th>Loading</th>
+<th>t</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Alpha (ann.)</td>
+<td>-0.006</td>
+<td>-1.7</td>
+</tr>
+<tr class="even">
+<td>value</td>
+<td>-0.048</td>
+<td>-1.3</td>
+</tr>
+<tr class="odd">
+<td>momentum</td>
+<td>+0.031</td>
+<td>1.4</td>
+</tr>
+<tr class="even">
+<td>quality</td>
+<td>+0.210</td>
+<td>3.8</td>
+</tr>
+<tr class="odd">
+<td>lowvol</td>
+<td>+0.080</td>
+<td>2.8</td>
+</tr>
+</tbody>
+</table>
+<p>The client conversation follows directly. GSLC has done what a
+four-factor smart-beta product is designed to do: hold quality, momentum
+and low-volatility tilts at a very low tracking error. Those tilts have
+cost about 90 bp a year in a market led by a handful of mega-cap growth
+stocks, and the negative mega-cap exposure (the small-cap loading) is
+the mechanical reason. A client who bought it as a mild, cheap factor
+tilt has received exactly that; a client who bought it expecting to beat
+the index has been disappointed for eleven years, and should be told
+plainly that eleven years is still too short to settle whether the
+premia will pay.</p>
+<h2 id="4-peer-group">4. Peer group</h2>
+<p>Since Dec 2017 (when all peers except DFAC have history):</p>
+<table>
+<thead>
+<tr class="header">
+<th>ETF</th>
+<th>Fee</th>
+<th>Ann. return</th>
+<th>Active vs SPY</th>
+<th>TE</th>
+<th>IR</th>
+<th>Sharpe</th>
+<th>Max DD</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>GSLC</td>
+<td>0.09%</td>
+<td>13.7%</td>
+<td>-0.8%</td>
+<td>1.3%</td>
+<td>-0.59</td>
+<td>0.73</td>
+<td>-24.5%</td>
+</tr>
+<tr class="even">
+<td>IVV</td>
+<td>0.03%</td>
+<td>14.6%</td>
+<td>+0.1%</td>
+<td>0.3%</td>
+<td>0.18</td>
+<td>0.77</td>
+<td>-23.9%</td>
+</tr>
+<tr class="odd">
+<td>LRGF</td>
+<td>0.08%</td>
+<td>12.6%</td>
+<td>-2.0%</td>
+<td>3.0%</td>
+<td>-0.59</td>
+<td>0.65</td>
+<td>-22.8%</td>
+</tr>
+<tr class="even">
+<td>QUAL</td>
+<td>0.15%</td>
+<td>13.6%</td>
+<td>-1.0%</td>
+<td>3.2%</td>
+<td>-0.25</td>
+<td>0.70</td>
+<td>-27.8%</td>
+</tr>
+<tr class="odd">
+<td>MTUM</td>
+<td>0.15%</td>
+<td>14.9%</td>
+<td>+0.3%</td>
+<td>10.3%</td>
+<td>0.08</td>
+<td>0.69</td>
+<td>-30.2%</td>
+</tr>
+<tr class="even">
+<td>VLUE</td>
+<td>0.15%</td>
+<td>13.4%</td>
+<td>-1.1%</td>
+<td>10.3%</td>
+<td>-0.03</td>
+<td>0.60</td>
+<td>-29.0%</td>
+</tr>
+<tr class="odd">
+<td>USMV</td>
+<td>0.15%</td>
+<td>9.1%</td>
+<td>-5.4%</td>
+<td>8.1%</td>
+<td>-0.66</td>
+<td>0.55</td>
+<td>-19.1%</td>
+</tr>
+<tr class="even">
+<td>JQUA</td>
+<td>0.12%</td>
+<td>14.9%</td>
+<td>+0.3%</td>
+<td>4.2%</td>
+<td>0.03</td>
+<td>0.82</td>
+<td>-22.1%</td>
+</tr>
+</tbody>
+</table>
+<p><img src="../figures/gslc_peers.png" alt="Peers" /></p>
+<p>Every multi-factor and defensive product in the group has trailed the
+S&amp;P 500 over this window; the single-factor momentum and quality
+ETFs roughly matched it. GSLC sits in the middle of the pack on
+information ratio, behind JQUA and QUAL and ahead of LRGF and USMV, at a
+fee below all of them except the plain index fund. Relative to its
+direct competitor LRGF it has half the tracking error and a similar
+shortfall.</p>
+<h2 id="what-this-analysis-cannot-tell-you">What this analysis cannot
+tell you</h2>
+<ul>
+<li>Whether GSLC will outperform going forward. Eleven years, one regime
+dominated by mega-cap growth. The factor evidence outside this window is
+long and international; the evidence inside it is negative.</li>
+<li>The exact reason the replica captures only 40% of the active
+variance: several unpublished elements are confounded and cannot be
+separated without the index's actual weights history (available from
+Solactive to licensees).</li>
+<li>Anything about GSIE or GEM, the international and emerging-market
+siblings, which use MSCI universes not covered here.</li>
+</ul>
+<h2 id="method-and-code">Method and code</h2>
+<p><code>src/gslc.py</code> builds the factor inputs from the Part 0
+pipeline (SEC EDGAR point-in-time fundamentals, yfinance prices),
+implements rulebook sections 1.0–2 as written, fits the two unpublished
+parameters on 2015–20 and runs the replica through Sep 2026.
+<code>src/gslc_analysis.py</code> does the active-return comparison
+against a same-universe benchmark (which removes survivorship bias from
+the comparison), the Fama-French and sleeve regressions, the peer table
+and charts. Tables: <code>output/gslc_*.csv</code>.</p>
+<p><em>Independent research for discussion purposes. Not affiliated with
+or endorsed by Goldman Sachs. Not investment advice.</em></p>
+</article><footer class="wrap">Independent research for discussion purposes. Not affiliated with or endorsed by Goldman Sachs. Not investment advice. © Hugo Hoenn 2026.</footer></body></html>

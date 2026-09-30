@@ -1,0 +1,31 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Goldman Sachs QIS product review · Hugo Hoenn</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;1,9..144,400&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet"><style>
+:root{--navy:#0B3D91;--ink:#151A21;--muted:#5B6770;--rule:#DCE1E8;--tint:#F3F6FA}
+*{box-sizing:border-box}body{margin:0;color:var(--ink);font-family:"IBM Plex Sans",-apple-system,Segoe UI,Helvetica,Arial,sans-serif;line-height:1.6;font-feature-settings:"tnum"}
+.top{background:var(--navy);color:#fff;padding:1.2rem 0}.top .wrap{display:flex;justify-content:space-between;align-items:center;font-size:.9rem}
+.top a{color:#C9D5EA;text-decoration:none;margin-left:1.4rem}.top a:hover{color:#fff}.top b{font-weight:600}
+.wrap{max-width:46rem;margin:0 auto;padding:0 1.5rem}
+article{padding:2.4rem 0 4rem}
+h1{font-family:"Fraunces",Georgia,serif;font-weight:400;font-size:clamp(1.9rem,4vw,2.6rem);line-height:1.15;letter-spacing:-.012em;margin:0 0 .8rem;color:var(--navy)}
+h2{font-family:"Fraunces",Georgia,serif;font-weight:400;font-size:1.5rem;margin:2.4rem 0 .8rem;color:var(--ink)}
+h3{font-size:1.05rem;margin:1.8rem 0 .5rem}
+p,li{font-size:1.02rem}
+h1+p em{color:var(--muted)}
+.meta{display:flex;gap:1rem;flex-wrap:wrap;align-items:center;margin:1rem 0 1.2rem;padding-bottom:1.2rem;border-bottom:1px solid var(--rule);font-size:.9rem;color:var(--muted)}
+.btn{display:inline-block;text-decoration:none;color:var(--navy);border:1px solid var(--navy);border-radius:3px;padding:.4rem .8rem;font-weight:500;font-size:.85rem}.btn:hover{background:var(--navy);color:#fff}
+img{max-width:100%;height:auto;display:block;margin:1.2rem 0;border:1px solid var(--rule);border-radius:4px}
+table{border-collapse:collapse;width:100%;font-size:.9rem;margin:1rem 0;display:block;overflow-x:auto}
+th{background:var(--navy);color:#fff;text-align:left;padding:.45rem .6rem;font-weight:600;white-space:nowrap}
+td{padding:.42rem .6rem;border-bottom:1px solid var(--rule);white-space:nowrap}tr:nth-child(even) td{background:var(--tint)}
+code{background:var(--tint);padding:.1rem .35rem;border-radius:3px;font-size:.88em}pre{background:var(--tint);padding:.9rem 1rem;border-radius:4px;overflow-x:auto;font-size:.85rem}pre code{background:none;padding:0}
+blockquote{margin:1rem 0;padding:.4rem 1rem;border-left:3px solid var(--navy);color:var(--muted)}
+a{color:var(--navy)}
+.series{background:var(--tint);border-radius:4px;padding:.9rem 1.1rem;font-size:.9rem;margin:0 0 1.6rem}.series a{text-decoration:none;font-weight:500}
+footer{border-top:1px solid var(--rule);padding:1.4rem 0 2.5rem;font-size:.85rem;color:var(--muted)}
+</style></head><body>
+<div class="top"><div class="wrap"><b><a href="/" style="margin:0;color:#fff">Hugo Hoenn</a></b><span><a href="/#work">Work</a><a href="/xray/">X-ray</a><a href="mailto:hhoenn@syr.edu">Contact</a></span></div></div>
+<article class="wrap"><h1>Goldman Sachs QIS product review</h1><p><em>Three client-style notes on the public products of Goldman Sachs Asset Management's Quantitative Investment Strategies team, built from public data and published code. Each ends with a section on what the evidence cannot show.</em></p>
+<div class="meta"><a class="btn" href="https://github.com/hugohoenn/gs-qis-review">Code and data on GitHub →</a></div>
+<h2><a href="/review/gartx/">Part 1 · Absolute Return Tracker (GARTX)</a></h2><p>Hedge fund replication since 2008. Ten ETFs explain 89% of its returns; an out-of-sample ETF clone tracks it at 2.0% tracking error and 0.94 correlation and earns the fee back. Best of the liquid replicators, and 0.93 correlated with the S&amp;P 500.</p>
+<h2><a href="/review/gslc/">Part 2 · ActiveBeta U.S. Large Cap (GSLC)</a></h2><p>Four-factor smart beta since 2015, rebuilt from the published rulebook with two unpublished parameters fitted on 2015–20 and tested on 2021–26. The rules recover 0.40 correlation of active returns; the ETF's 0.9%/yr shortfall traces to quality and low-volatility tilts.</p>
+<h2><a href="/macro/">Part 3 · Cross-asset trend &amp; carry vs. Managed Futures Strategy (GMSSX)</a></h2><p>A 21-market systematic macro program with volatility targeting and risk parity, 2008–2026: 0.41 Sharpe, −21% drawdown, −0.15 correlation to equities, positive in 2008, 2020 and 2022. A gradient-boosted ML overlay under purged walk-forward validation lost to the simple rule.</p></article><footer class="wrap">Independent research for discussion purposes. Not affiliated with or endorsed by Goldman Sachs. Not investment advice. © Hugo Hoenn 2026.</footer></body></html>

@@ -1,0 +1,334 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Absolute Return Tracker, reverse-engineered · Hugo Hoenn</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;1,9..144,400&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet"><style>
+:root{--navy:#0B3D91;--ink:#151A21;--muted:#5B6770;--rule:#DCE1E8;--tint:#F3F6FA}
+*{box-sizing:border-box}body{margin:0;color:var(--ink);font-family:"IBM Plex Sans",-apple-system,Segoe UI,Helvetica,Arial,sans-serif;line-height:1.6;font-feature-settings:"tnum"}
+.top{background:var(--navy);color:#fff;padding:1.2rem 0}.top .wrap{display:flex;justify-content:space-between;align-items:center;font-size:.9rem}
+.top a{color:#C9D5EA;text-decoration:none;margin-left:1.4rem}.top a:hover{color:#fff}.top b{font-weight:600}
+.wrap{max-width:46rem;margin:0 auto;padding:0 1.5rem}
+article{padding:2.4rem 0 4rem}
+h1{font-family:"Fraunces",Georgia,serif;font-weight:400;font-size:clamp(1.9rem,4vw,2.6rem);line-height:1.15;letter-spacing:-.012em;margin:0 0 .8rem;color:var(--navy)}
+h2{font-family:"Fraunces",Georgia,serif;font-weight:400;font-size:1.5rem;margin:2.4rem 0 .8rem;color:var(--ink)}
+h3{font-size:1.05rem;margin:1.8rem 0 .5rem}
+p,li{font-size:1.02rem}
+h1+p em{color:var(--muted)}
+.meta{display:flex;gap:1rem;flex-wrap:wrap;align-items:center;margin:1rem 0 1.2rem;padding-bottom:1.2rem;border-bottom:1px solid var(--rule);font-size:.9rem;color:var(--muted)}
+.btn{display:inline-block;text-decoration:none;color:var(--navy);border:1px solid var(--navy);border-radius:3px;padding:.4rem .8rem;font-weight:500;font-size:.85rem}.btn:hover{background:var(--navy);color:#fff}
+img{max-width:100%;height:auto;display:block;margin:1.2rem 0;border:1px solid var(--rule);border-radius:4px}
+table{border-collapse:collapse;width:100%;font-size:.9rem;margin:1rem 0;display:block;overflow-x:auto}
+th{background:var(--navy);color:#fff;text-align:left;padding:.45rem .6rem;font-weight:600;white-space:nowrap}
+td{padding:.42rem .6rem;border-bottom:1px solid var(--rule);white-space:nowrap}tr:nth-child(even) td{background:var(--tint)}
+code{background:var(--tint);padding:.1rem .35rem;border-radius:3px;font-size:.88em}pre{background:var(--tint);padding:.9rem 1rem;border-radius:4px;overflow-x:auto;font-size:.85rem}pre code{background:none;padding:0}
+blockquote{margin:1rem 0;padding:.4rem 1rem;border-left:3px solid var(--navy);color:var(--muted)}
+a{color:var(--navy)}
+.series{background:var(--tint);border-radius:4px;padding:.9rem 1.1rem;font-size:.9rem;margin:0 0 1.6rem}.series a{text-decoration:none;font-weight:500}
+footer{border-top:1px solid var(--rule);padding:1.4rem 0 2.5rem;font-size:.85rem;color:var(--muted)}
+</style></head><body>
+<div class="top"><div class="wrap"><b><a href="/" style="margin:0;color:#fff">Hugo Hoenn</a></b><span><a href="/#work">Work</a><a href="/xray/">X-ray</a><a href="mailto:hhoenn@syr.edu">Contact</a></span></div></div>
+<article class="wrap"><h1
+id="gs-qis-product-review--part-1-absolute-return-tracker-gartx--gjrtx">GS
+QIS Product Review — Part 1: Absolute Return Tracker (GARTX /
+GJRTX)</h1>
+<p><em>An independent analysis from public data, written the way a
+client portfolio manager would brief a client. Hugo Hoenn, September
+2026.</em></p><div class="meta"><a class="btn" href="https://github.com/hugohoenn/gs-qis-review">Code and data on GitHub →</a><span>Public data only · every table reproducible from the repo</span></div><div class="series">Goldman Sachs QIS product review, from public data: <a href="/review/gartx/">Part 1 · Absolute Return Tracker</a> · <a href="/review/gslc/">Part 2 · ActiveBeta U.S. Large Cap</a> · <a href="/macro/">Part 3 · Cross-asset trend program vs. Managed Futures Strategy</a></div>
+<p>The Goldman Sachs Absolute Return Tracker Fund is Goldman Sachs Asset
+Management's hedge fund replication product, run by the Quantitative
+Investment Strategies team since May 2008. Its objective is to
+approximate "the return and risk patterns of a diversified universe of
+hedge funds" using liquid instruments. Institutional class GJRTX: 0.74%
+net expense ratio, ~$6.1bn, 134% turnover; the reported holdings are
+total-return swaps, index futures, credit default swap indices and ETFs.
+This note asks the three questions a client would ask.</p>
+<h2 id="1-what-does-it-actually-hold">1. What does it actually
+hold?</h2>
+<p>Regressing GJRTX's monthly excess returns (Jul 2008 – Sep 2026, 219
+months) on ten liquid ETFs explains <strong>89%</strong> of its
+variance:</p>
+<table>
+<thead>
+<tr class="header">
+<th>ETF</th>
+<th>Exposure</th>
+<th>Beta</th>
+<th>t</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Alpha (ann.)</td>
+<td>Residual (annualised)</td>
+<td>-0.010</td>
+<td>-2.4</td>
+</tr>
+<tr class="even">
+<td>SPY</td>
+<td>US large cap</td>
+<td>+0.173</td>
+<td>6.0</td>
+</tr>
+<tr class="odd">
+<td>IWM</td>
+<td>US small cap</td>
+<td>+0.053</td>
+<td>4.9</td>
+</tr>
+<tr class="even">
+<td>EFA</td>
+<td>Developed ex-US</td>
+<td>+0.085</td>
+<td>3.5</td>
+</tr>
+<tr class="odd">
+<td>EEM</td>
+<td>Emerging markets</td>
+<td>+0.026</td>
+<td>1.8</td>
+</tr>
+<tr class="even">
+<td>IEF</td>
+<td>7-10y Treasuries</td>
+<td>-0.149</td>
+<td>-2.3</td>
+</tr>
+<tr class="odd">
+<td>LQD</td>
+<td>IG credit</td>
+<td>+0.189</td>
+<td>3.3</td>
+</tr>
+<tr class="even">
+<td>HYG</td>
+<td>High yield</td>
+<td>-0.118</td>
+<td>-2.8</td>
+</tr>
+<tr class="odd">
+<td>DBC</td>
+<td>Commodities</td>
+<td>+0.015</td>
+<td>1.1</td>
+</tr>
+<tr class="even">
+<td>GLD</td>
+<td>Gold</td>
+<td>+0.032</td>
+<td>2.6</td>
+</tr>
+<tr class="odd">
+<td>UUP</td>
+<td>US dollar</td>
+<td>+0.035</td>
+<td>1.0</td>
+</tr>
+</tbody>
+</table>
+<p>Read as a portfolio: roughly a third in global equities (US large and
+small, developed and emerging), a long investment-grade credit position
+funded by short high-yield and short Treasuries (a credit-spread and
+duration-short stance), a small gold position, and the remainder in
+cash. The residual is <strong>-1.0%/yr (t = -2.4)</strong>,
+statistically significant and roughly equal to the fee. That is what a
+tracker should show: no unexplained return, positive or negative, beyond
+costs.</p>
+<p>A Fama-French 5-factor + momentum regression tells the same story
+from the style side: market beta 0.33 (t = 23), no significant size,
+value, profitability, investment or momentum tilt, R² 0.83. The fund is
+hedge fund <em>beta</em>, as advertised, not hedge fund
+<em>alpha</em>.</p>
+<p><img src="../figures/gartx_exposures.png"
+alt="Inferred exposures" /></p>
+<p><strong>Exposures have drifted.</strong> A Kalman filter with
+random-walk betas shows equity exposure rising from about 0.16 (2009–13)
+to 0.35 today, the Treasury short shrinking from -0.28 to -0.14, and a
+dollar short that closed after 2017. Either the hedge fund universe the
+fund tracks has become more equity-directional, or the tracking
+methodology has, and a client should ask which. It matters because a
+0.37 beta fund behaves very differently in a drawdown from a 0.15 beta
+fund.</p>
+<h2 id="2-could-a-client-replicate-it-with-etfs">2. Could a client
+replicate it with ETFs?</h2>
+<p>Yes, closely. An out-of-sample clone that re-estimates the ten betas
+every month on the trailing 24 months and holds those ETF weights the
+following month (no alpha term, since alpha cannot be bought) tracks the
+fund with <strong>2.0% tracking error and 0.94 correlation</strong>
+since Jul 2010. The clone returned 5.2%/yr against the fund's 4.5%: a
+0.7%/yr gap, almost exactly the expense ratio.</p>
+<p><img src="../figures/gartx_clone.png" alt="Fund vs clone" /></p>
+<p>This is not a criticism of the fund; it is the fund working. A
+replication product's promise is liquid, transparent hedge fund beta at
+low cost, and the fee is what a client pays for the daily rebalancing,
+the 3,000-fund universe, and not having to run a regression every month.
+But it does frame the pricing conversation: the marginal value of the
+product over a static ETF basket is about 70 basis points a year.</p>
+<h2 id="3-how-does-it-compare-and-what-is-it-for">3. How does it
+compare, and what is it for?</h2>
+<p>Common window from Aug 2011 (when all peers exist):</p>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th>Ann. return</th>
+<th>Vol</th>
+<th>Sharpe</th>
+<th>Max DD</th>
+<th>Beta to SPY</th>
+<th>Corr. to SPY</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>GARTX (Inst.)</td>
+<td>4.4%</td>
+<td>5.7%</td>
+<td>0.53</td>
+<td>-9.8%</td>
+<td>0.37</td>
+<td>0.93</td>
+</tr>
+<tr class="even">
+<td>GARTX (A)</td>
+<td>4.0%</td>
+<td>5.7%</td>
+<td>0.46</td>
+<td>-10.1%</td>
+<td>0.37</td>
+<td>0.93</td>
+</tr>
+<tr class="odd">
+<td>QAI</td>
+<td>3.2%</td>
+<td>5.1%</td>
+<td>0.36</td>
+<td>-13.8%</td>
+<td>0.31</td>
+<td>0.86</td>
+</tr>
+<tr class="even">
+<td>HDG</td>
+<td>2.9%</td>
+<td>5.7%</td>
+<td>0.27</td>
+<td>-14.1%</td>
+<td>0.35</td>
+<td>0.87</td>
+</tr>
+<tr class="odd">
+<td>60/40 SPY/AGG</td>
+<td>9.5%</td>
+<td>9.2%</td>
+<td>0.87</td>
+<td>-20.0%</td>
+<td>0.64</td>
+<td>0.98</td>
+</tr>
+<tr class="even">
+<td>ETF clone (OOS)</td>
+<td>5.1%</td>
+<td>5.6%</td>
+<td>0.66</td>
+<td>-11.4%</td>
+<td>0.36</td>
+<td>0.92</td>
+</tr>
+<tr class="odd">
+<td>T-bills</td>
+<td>1.5%</td>
+<td>0.6%</td>
+<td>—</td>
+<td>-0.4%</td>
+<td>0.00</td>
+<td>0.00</td>
+</tr>
+</tbody>
+</table>
+<p>GJRTX is the best of the three hedge fund replicators on every
+risk-adjusted measure: higher Sharpe, smaller drawdown, and it beat both
+QAI and HDG on raw return. Against a plain 60/40, however, it lost on
+Sharpe (0.53 vs 0.87) and, more importantly for its intended role, it is
+<strong>0.93 correlated with the S&amp;P 500</strong>. It is a
+low-volatility, low-beta equity-and-credit portfolio that dampens
+drawdowns; it is not an uncorrelated diversifier.</p>
+<table>
+<thead>
+<tr class="header">
+<th>Period</th>
+<th>GARTX</th>
+<th>SPY</th>
+<th>60/40</th>
+<th>QAI</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>GFC (Jul 2008-Feb 2009)</td>
+<td>-14.9%</td>
+<td>-41.4%</td>
+<td>-25.9%</td>
+<td>n/a</td>
+</tr>
+<tr class="even">
+<td>2011 (Aug-Sep)</td>
+<td>-5.5%</td>
+<td>-12.1%</td>
+<td>-6.4%</td>
+<td>-2.8%</td>
+</tr>
+<tr class="odd">
+<td>Q4 2018</td>
+<td>-5.1%</td>
+<td>-13.5%</td>
+<td>-7.4%</td>
+<td>-4.2%</td>
+</tr>
+<tr class="even">
+<td>COVID (Feb-Mar 2020)</td>
+<td>-9.4%</td>
+<td>-19.4%</td>
+<td>-11.5%</td>
+<td>-7.0%</td>
+</tr>
+<tr class="odd">
+<td>2022</td>
+<td>-6.3%</td>
+<td>-18.2%</td>
+<td>-15.8%</td>
+<td>-8.7%</td>
+</tr>
+</tbody>
+</table>
+<p>In every stress episode since launch the fund lost roughly a third to
+half of what US equities lost, and less than 60/40 in three of five.
+That is exactly the risk pattern of the hedge fund industry in
+aggregate, which is the objective. A client who owns it for downside
+cushioning has been served; a client who owns it as a substitute for
+uncorrelated alpha has not, and the 0.93 correlation is the number to
+lead with.</p>
+<p><img src="../figures/gartx_vs_peers.png" alt="Peers" /></p>
+<h2 id="what-this-analysis-cannot-tell-you">What this analysis cannot
+tell you</h2>
+<ul>
+<li>It says nothing yet about how well the fund tracks its target. That
+needs the HFRX Global Hedge Fund Index (Part 1b, on receipt of the index
+history).</li>
+<li>Returns are net of fund fees but before any advisory fee; the ETF
+clone ignores its own trading costs, which at 24-month rebalancing are
+small.</li>
+<li>The ten-ETF basket is a choice. A richer basket (volatility, trend,
+merger arbitrage proxies) would raise R² further; 0.89 is already a high
+bar.</li>
+<li>The fund's stated goal is to track hedge fund returns, not to beat
+60/40. Comparing it to 60/40 answers a client question, not the fund's
+mandate.</li>
+</ul>
+<h2 id="method-and-code">Method and code</h2>
+<p><code>src/data.py</code> pulls prices (Yahoo Finance).
+<code>src/gartx.py</code> runs static OLS with HAC errors, 24-month
+rolling OLS, a random-walk Kalman filter with the state noise chosen by
+one-step-ahead likelihood, the out-of-sample clone, the Fama-French
+regression and peer metrics. <code>src/charts.py</code> draws the
+figures. All tables are in <code>output/gartx_*.csv</code>. Licensed
+index data (HFRX) is kept out of the repository; only derived statistics
+are published.</p>
+<p><em>Independent research for discussion purposes. Not affiliated with
+or endorsed by Goldman Sachs. Not investment advice.</em></p>
+</article><footer class="wrap">Independent research for discussion purposes. Not affiliated with or endorsed by Goldman Sachs. Not investment advice. © Hugo Hoenn 2026.</footer></body></html>
